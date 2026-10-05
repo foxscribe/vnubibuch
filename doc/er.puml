@@ -1,0 +1,128 @@
+@startuml
+
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1.5
+
+' Entity Styling
+skinparam entity {
+    BackgroundColor #FFFFFF
+    BorderColor #2C3E50
+    BorderThickness 1.5
+    FontColor #2C3E50
+    FontSize 13
+}
+skinparam stereotypeCBackgroundColor #ECF0F1
+
+' === Entities (Grouped by color) ===
+
+entity "LIBRARIAN" as librarian #E8F8F5 {
+  * id : INT <<PK>>
+  --
+  * name : STRING
+  * email : STRING
+  * secret : STRING
+}
+
+entity "SECTION" as section #EBF5FB {
+  * id : INT <<PK>>
+  --
+  * name : STRING
+  * bbk : STRING
+  * added_by : INT <<FK>>
+}
+
+entity "SERIES" as series #EBF5FB {
+  * id : INT <<PK>>
+  --
+  * name : STRING
+  * added_by : INT <<FK>>
+}
+
+entity "AUTHOR" as author #FEF9E7 {
+  * id : INT <<PK>>
+  --
+  * surname : STRING
+  * first_name : STRING
+  * patronymic : STRING
+  * added_by : INT <<FK>>
+}
+
+entity "TRANSLATOR" as translator #FDEDEC {
+  * id : INT <<PK>>
+  --
+  * surname : STRING
+  * first_name : STRING
+  * patronymic : STRING
+  * added_by : INT <<FK>>
+}
+
+entity "ILLUSTRATOR" as illustrator #FDEDEC {
+  * id : INT <<PK>>
+  --
+  * surname : STRING
+  * first_name : STRING
+  * patronymic : STRING
+  * added_by : INT <<FK>>
+}
+
+entity "BOOK" as book #F4ECF7 {
+  * id : INT <<PK>>
+  --
+  * title : STRING
+  author_id : INT <<FK>>
+  series_id : INT <<FK>>
+  * city : STRING
+  * publisher : STRING
+  * year : INT
+  tome : INT
+  * page_count : INT
+  * is_available : BOOLEAN
+  * is_illustrated : BOOLEAN
+  redaction : INT
+  section_id : INT <<FK>>
+  translator_id : INT <<FK>>
+  illustrator_id : INT <<FK>>
+  isbn : STRING
+  note : STRING
+  * added_by : INT <<FK>>
+}
+
+entity "SUBWORK" as subwork #F9EBEA {
+  * id : INT <<PK>>
+  --
+  * title : STRING
+  * author_id : INT <<FK>>
+  * book_id : INT <<FK>>
+  * added_by : INT <<FK>>
+}
+
+' === Layout Control ===
+librarian -[hidden]down- section
+section -[hidden]down- book
+series -[hidden]down- book
+author -[hidden]down- book
+translator -[hidden]down- book
+illustrator -[hidden]down- book
+
+' === Core Relationships ===
+section }--{ author : "contains"
+section --{ book : "contains"
+author ---{ book : "writes"
+series }--{ author : "includes"
+series ---{ book : "includes"
+illustrator }--{ book : "illustrates"
+translator }--{ book : "translates"
+author --{ subwork : "writes"
+book --{ subwork : "contains"
+
+' === Audit/Tracking Relationships ===
+librarian ..{ section
+librarian ..{ illustrator
+librarian ..{ author
+librarian ..{ book
+librarian ..{ translator
+librarian ..{ series
+librarian ..{ subwork
+
+@enduml
